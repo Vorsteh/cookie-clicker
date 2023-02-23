@@ -13,7 +13,11 @@ function App() {
 
   const [cookieAmount, setCookieAmount] = useState('cookies')
 
-  const [cookieGatherers, setCookieGatherers] = useState({})
+  const [cookieGatherers, setCookieGatherers] = useState([
+    {type: 'Cursor', amount: 0, cps: 1, icon: Finger, price: 5},
+    {type: 'Grandma', amount: 0, cps: 2, icon: Finger, price: 50},
+    {type: 'Hiroshima', amount: 0, cps: 5, icon: Finger, price: 1000}
+  ])
 
   const [ticking, setTicking] = useState(true)
    
@@ -29,6 +33,24 @@ function App() {
     setCookies(cookies => cookies + amountToAdd)
   }
 
+  const addBuyComponent = (isType) => {
+    setCookieGatherers(cookieGatherers.map(item => {
+      
+      if(cookies >= item.price && isType === item.type){
+        setCookies(cookies => cookies - item.price)
+        setCps(cps => cps + item.cps)
+        return isType === item.type ? {type: isType, amount: item.amount+1, cps: item.cps, icon: item.icon, price: 5+Math.round(item.price*1.1)} : item
+      }else{
+        return item
+      }
+    }))
+  }
+
+
+  const cookieGatherersList = cookieGatherers.map(item => {
+    return <BuyComponent type={item.type} icon={item.icon} cps={item.cps} amount={item.amount} price={item.price} key={item.type} addFunction={addBuyComponent}/>
+  })
+
   return (
     <div className="h-screen flex text-gray-200">
       <div className="h-full bg-blue-400 w-1/3 text-center">
@@ -39,13 +61,13 @@ function App() {
           <p className='text-sm font-semibold'>per second: {cps}</p>
         </div>
 
-        <img src={CookieImage} alt="" className='m-auto mt-20 cursor-pointer hover:scale-105 active:scale-95 transition-all' onClick={addCookies}/>
+        <img src={CookieImage} alt="" className='m-auto mt-20 cursor-pointer hover:scale-105 active:scale-95 transition-all rounded-full' onClick={addCookies}/>
       </div>
       <div className="h-full bg-red-400 w-1/2">
         
       </div>
       <div className="h-full bg-purple-400 w-1/6">
-        <BuyComponent icon={Finger} type={'Cursor'}/>
+        {cookieGatherersList}
       </div>
     </div>
   )
